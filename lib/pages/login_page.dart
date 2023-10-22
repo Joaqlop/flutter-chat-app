@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'package:chat_app/helpers/helpers.dart';
+import 'package:chat_app/services/services.dart';
 import 'package:chat_app/widgets/widgets.dart';
 
 class LoginPage extends StatelessWidget {
@@ -46,6 +49,7 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
@@ -67,10 +71,23 @@ class __FormState extends State<_Form> {
           const SizedBox(height: 20),
           BlueButton(
             placeholder: 'Ingresar',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passwordCtrl.text);
-            },
+            onPressed: authService.auth
+                ? () {}
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final loginSuccess = await authService.login(
+                      emailCtrl.text.trim(),
+                      passwordCtrl.text.trim(),
+                    );
+
+                    if (loginSuccess) {
+                      //TODO Connect Socket Server
+                      Navigator.pushReplacementNamed(context, 'users');
+                    } else {
+                      // ignore: use_build_context_synchronously
+                      showAlert(context, 'Login Incorrecto', 'Revisar datos');
+                    }
+                  },
           ),
         ],
       ),

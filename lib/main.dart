@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'package:chat_app/config/routes/routes.dart';
+import 'package:chat_app/services/services.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -22,16 +24,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Chat App',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.grey.shade200,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Chat App',
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.grey.shade200,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        initialRoute: 'loading',
+        routes: appRoutes,
       ),
-      initialRoute: 'chat',
-      routes: appRoutes,
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'package:chat_app/helpers/alert.dart';
+import 'package:chat_app/services/services.dart';
 import 'package:chat_app/widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -46,6 +49,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
@@ -74,10 +79,23 @@ class __FormState extends State<_Form> {
           const SizedBox(height: 20),
           BlueButton(
             placeholder: 'Registrate',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passwordCtrl.text);
-            },
+            onPressed: authService.auth
+                ? () {}
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final registerSuccess = await authService.register(
+                      nameCtrl.text.trim(),
+                      emailCtrl.text.trim(),
+                      passwordCtrl.text.trim(),
+                    );
+
+                    if (registerSuccess) {
+                      Navigator.pushReplacementNamed(context, 'users');
+                    } else {
+                      showAlert(context, 'Error',
+                          'El correo electrónico ya se encuentra registrado.');
+                    }
+                  },
           ),
         ],
       ),

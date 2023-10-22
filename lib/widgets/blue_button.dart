@@ -1,5 +1,7 @@
+import 'package:chat_app/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/config/theme/apptext_theme.dart';
+import 'package:provider/provider.dart';
 
 class BlueButton extends StatelessWidget {
   const BlueButton({key, required this.placeholder, required this.onPressed})
@@ -10,6 +12,7 @@ class BlueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return MaterialButton(
       elevation: 0,
       highlightElevation: 5,
@@ -19,9 +22,17 @@ class BlueButton extends StatelessWidget {
       child: SizedBox(
         width: 100,
         height: 50,
-        child: Center(
-          child: Text(placeholder, style: AppTextTheme.whiteButton),
-        ),
+        child: authService.auth
+            ? const Center(
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.blueAccent,
+                  color: Colors.white,
+                  minHeight: 3,
+                ),
+              )
+            : Center(
+                child: Text(placeholder, style: AppTextTheme.whiteButton),
+              ),
       ),
     );
   }

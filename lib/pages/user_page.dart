@@ -1,6 +1,10 @@
-import 'package:chat_app/models/usuario.dart';
 import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'package:chat_app/models/user.dart';
+import 'package:chat_app/services/services.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -11,22 +15,28 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   final usuarios = [
-    Usuario(true, 'topo@topo.com', 'Topo', '1'),
-    Usuario(false, 'fio@fio.com', 'Fio', '2'),
+    User(name: 'Topo', email: 'topo@topo.com', online: true, uid: '2'),
+    User(name: 'Fio', email: 'fio@fio.com', online: false, uid: '1212'),
   ];
   final RefreshController _refreshController = RefreshController();
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey.shade200,
-        title: Text('Name'),
+        title: Text(authService.user!.name),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.exit_to_app),
-          onPressed: () {},
+          icon: const Icon(Icons.exit_to_app),
+          onPressed: () {
+            //TODO Disconnect Socket Server
+            Navigator.pushReplacementNamed(context, 'login');
+            AuthService.deleteToken();
+          },
         ),
         actions: [
           Container(
@@ -39,10 +49,10 @@ class _UserPageState extends State<UserPage> {
       body: SmartRefresher(
         controller: _refreshController,
         enablePullDown: true,
-        header: WaterDropMaterialHeader(
-          offset: 4,
+        header: MaterialClassicHeader(
+          offset: 2,
           backgroundColor: Colors.grey.shade300,
-          distance: 30,
+          distance: 25,
           color: Colors.grey.shade900,
         ),
         onRefresh: () => _refresh(),
@@ -61,7 +71,7 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  ListTile _user(Usuario usuario) {
+  ListTile _user(User usuario) {
     return ListTile(
       title: Text(usuario.name),
       subtitle: Text(usuario.email),
@@ -81,7 +91,7 @@ class _UserPageState extends State<UserPage> {
 
   void _refresh() async {
     // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 700));
+    await Future.delayed(const Duration(milliseconds: 700));
     // if failed,use refreshFailed()
     _refreshController.refreshCompleted();
   }

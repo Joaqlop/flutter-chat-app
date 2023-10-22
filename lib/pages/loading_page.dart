@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:chat_app/services/services.dart';
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({super.key});
@@ -6,9 +9,30 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
-        child: CircularProgressIndicator(),
+      body: FutureBuilder(
+        future: checkLoginState(context),
+        builder: (context, snapshot) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
+  }
+
+  Future checkLoginState(BuildContext context) async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    final auth = await authService.isLogged();
+
+    if (auth) {
+      // Connect SocketServer
+
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, 'users');
+    } else {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, 'login');
+    }
   }
 }
