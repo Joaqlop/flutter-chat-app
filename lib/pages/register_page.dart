@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:chat_app/helpers/alert.dart';
@@ -50,6 +53,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -90,10 +94,14 @@ class __FormState extends State<_Form> {
                     );
 
                     if (registerSuccess) {
+                      socketService.connect();
                       Navigator.pushReplacementNamed(context, 'users');
                     } else {
-                      showAlert(context, 'Error',
-                          'El correo electrónico ya se encuentra registrado.');
+                      showAlert(
+                        context,
+                        'Error',
+                        'El correo electrónico ya se encuentra registrado.',
+                      );
                     }
                   },
           ),

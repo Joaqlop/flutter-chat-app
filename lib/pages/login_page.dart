@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,6 +52,8 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
@@ -81,10 +85,9 @@ class __FormState extends State<_Form> {
                     );
 
                     if (loginSuccess) {
-                      //TODO Connect Socket Server
+                      socketService.connect();
                       Navigator.pushReplacementNamed(context, 'users');
                     } else {
-                      // ignore: use_build_context_synchronously
                       showAlert(context, 'Login Incorrecto', 'Revisar datos');
                     }
                   },

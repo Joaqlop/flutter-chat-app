@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:chat_app/services/services.dart';
@@ -12,7 +13,7 @@ class LoadingPage extends StatelessWidget {
       body: FutureBuilder(
         future: checkLoginState(context),
         builder: (context, snapshot) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         },
@@ -22,12 +23,13 @@ class LoadingPage extends StatelessWidget {
 
   Future checkLoginState(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final socketService = Provider.of<SocketService>(context, listen: false);
 
     final auth = await authService.isLogged();
 
     if (auth) {
       // Connect SocketServer
-
+      socketService.connect();
       // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, 'users');
     } else {

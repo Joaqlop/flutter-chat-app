@@ -8,10 +8,10 @@ import 'package:chat_app/models/models.dart';
 import '../global/enviroment.dart';
 
 class AuthService with ChangeNotifier {
-  User? user;
+  late User user;
   bool _auth = false;
 
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
 
   bool get auth => _auth;
   set auth(bool value) {

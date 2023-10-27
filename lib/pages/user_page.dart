@@ -14,35 +14,41 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final usuarios = [
-    User(name: 'Topo', email: 'topo@topo.com', online: true, uid: '2'),
-    User(name: 'Fio', email: 'fio@fio.com', online: false, uid: '1212'),
-  ];
   final RefreshController _refreshController = RefreshController();
+  final userService = UserService();
+  List<User> users = [];
+
+  @override
+  void initState() {
+    _loadUsers();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey.shade200,
-        title: Text(authService.user!.name),
+        title: Text(authService.user.name),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.exit_to_app),
           onPressed: () {
-            //TODO Disconnect Socket Server
-            Navigator.pushReplacementNamed(context, 'login');
+            socketService.disconnect();
             AuthService.deleteToken();
+            Navigator.pushReplacementNamed(context, 'login');
           },
         ),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 10),
-            child: //Icon(Icons.check_circle, color: Colors.greenAccent),
-                Icon(Icons.cancel, color: Colors.red[400]),
+            child: (socketService.serverStatus == ServerStatus.Online)
+                ? Icon(Icons.check_circle, color: Colors.green[400])
+                : Icon(Icons.cancel, color: Colors.red[400]),
           )
         ],
       ),
@@ -55,7 +61,7 @@ class _UserPageState extends State<UserPage> {
           distance: 25,
           color: Colors.grey.shade900,
         ),
-        onRefresh: () => _refresh(),
+        onRefresh: () => _loadUsers(),
         child: _userList(),
       ),
     );
@@ -63,36 +69,40 @@ class _UserPageState extends State<UserPage> {
 
   ListView _userList() {
     return ListView.separated(
-      itemCount: usuarios.length,
+      itemCount: users.length,
       separatorBuilder: (_, index) => Divider(
         color: Colors.grey[100],
       ),
-      itemBuilder: (_, i) => _user(usuarios[i]),
+      itemBuilder: (_, i) => _users(users[i]),
     );
   }
 
-  ListTile _user(User usuario) {
+  ListTile _users(User user) {
     return ListTile(
-      title: Text(usuario.name),
-      subtitle: Text(usuario.email),
+      title: Text(user.name),
+      subtitle: Text(user.email),
       leading: CircleAvatar(
-        child: Text(usuario.name.substring(0, 2)),
+        child: Text(user.name.substring(0, 2)),
       ),
       trailing: Container(
         width: 11,
         height: 11,
         decoration: BoxDecoration(
-          color: usuario.online ? Colors.green[400] : Colors.red[400],
+          color: user.online ? Colors.green[400] : Colors.red[400],
           borderRadius: BorderRadius.circular(100),
         ),
       ),
+      onTap: () {
+        final chatService = Provider.of<ChatService>(context, listen: false);
+        chatService.userTo = user;
+        Navigator.pushNamed(context, 'chat');
+      },
     );
   }
 
-  void _refresh() async {
-    // monitor network fetch
-    await Future.delayed(const Duration(milliseconds: 700));
-    // if failed,use refreshFailed()
+  void _loadUsers() async {
+    users = await userService.getUsers();
+    setState(() {});
     _refreshController.refreshCompleted();
   }
 }
