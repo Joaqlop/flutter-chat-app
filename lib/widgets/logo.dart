@@ -1,3 +1,4 @@
+import 'package:chat_app/config/theme/apptext_theme.dart';
 import 'package:flutter/material.dart';
 
 class Logo extends StatelessWidget {
@@ -5,17 +6,21 @@ class Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: SizedBox(
         height: 250,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Image(
-              height: 200,
-              width: 200,
+            const Image(
+              height: 175,
+              width: 175,
               image: AssetImage('assets/logo.png'),
             ),
-            Text('Chat App'),
+            SizedBox(
+              height: 50,
+              child: Text('Chatting!', style: AppTextTheme.logoTitle),
+            )
           ],
         ),
       ),

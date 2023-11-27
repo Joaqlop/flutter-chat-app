@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -30,10 +32,9 @@ class LoadingPage extends StatelessWidget {
     if (auth) {
       // Connect SocketServer
       socketService.connect();
-      // ignore: use_build_context_synchronously
+
       Navigator.pushReplacementNamed(context, 'users');
     } else {
-      // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, 'login');
     }
   }

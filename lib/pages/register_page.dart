@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:chat_app/config/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -20,13 +21,22 @@ class RegisterPage extends StatelessWidget {
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Crea tu cuenta!'),
+                const Logo(),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 50,
+                  child: Text(
+                    'Creá tu cuenta',
+                    style: AppTextTheme.greyTitle,
+                  ),
+                ),
                 const _Form(),
+                const SizedBox(height: 20),
                 Labels(
                   account: '¿Ya tenés cuenta? ',
-                  action: 'Ingresá :)',
+                  action: 'Ingresá',
                   onTap: () => Navigator.pushReplacementNamed(context, 'login'),
                 ),
               ],
@@ -48,6 +58,7 @@ class _Form extends StatefulWidget {
 class __FormState extends State<_Form> {
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
+  final passwordCtrl2 = TextEditingController();
   final nameCtrl = TextEditingController();
 
   @override
@@ -81,6 +92,14 @@ class __FormState extends State<_Form> {
             isPassword: true,
           ),
           const SizedBox(height: 20),
+          CustomInput(
+            placeholder: 'Repetir Contraseña',
+            icon: Icons.key,
+            keyboardType: TextInputType.text,
+            textController: passwordCtrl2,
+            isPassword: true,
+          ),
+          const SizedBox(height: 20),
           BlueButton(
             placeholder: 'Registrate',
             onPressed: authService.auth
@@ -97,11 +116,19 @@ class __FormState extends State<_Form> {
                       socketService.connect();
                       Navigator.pushReplacementNamed(context, 'users');
                     } else {
-                      showAlert(
-                        context,
-                        'Error',
-                        'El correo electrónico ya se encuentra registrado.',
-                      );
+                      if (emailCtrl.text.isEmpty) {
+                        showAlert(
+                          context,
+                          'Error',
+                          'Completá los campos requeridos',
+                        );
+                      } else {
+                        showAlert(
+                          context,
+                          'Error',
+                          'El correo electrónico ya se encuentra registrado.',
+                        );
+                      }
                     }
                   },
           ),

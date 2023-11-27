@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'package:chat_app/models/user.dart';
+import 'package:chat_app/config/theme/apptext_theme.dart';
+import 'package:chat_app/models/models.dart';
 import 'package:chat_app/services/services.dart';
 
 class UserPage extends StatefulWidget {
@@ -26,30 +27,18 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
     final socketService = Provider.of<SocketService>(context);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey.shade200,
-        title: Text(authService.user.name),
         centerTitle: true,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.exit_to_app),
-          onPressed: () {
-            socketService.disconnect();
-            AuthService.deleteToken();
-            Navigator.pushReplacementNamed(context, 'login');
-          },
+        title: Text(
+          'Chatting!',
+          style: AppTextTheme.logoTitle?.copyWith(fontSize: 22),
         ),
+        elevation: 0,
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 10),
-            child: (socketService.serverStatus == ServerStatus.Online)
-                ? Icon(Icons.check_circle, color: Colors.green[400])
-                : Icon(Icons.cancel, color: Colors.red[400]),
-          )
+          _menuOptions(socketService.serverStatus),
         ],
       ),
       body: SmartRefresher(
@@ -64,6 +53,47 @@ class _UserPageState extends State<UserPage> {
         onRefresh: () => _loadUsers(),
         child: _userList(),
       ),
+      floatingActionButton: FloatingActionButton(
+        elevation: 0,
+        highlightElevation: 0,
+        onPressed: () {},
+        child: const Icon(Icons.chat),
+      ),
+    );
+  }
+
+  PopupMenuButton<dynamic> _menuOptions(dynamic status) {
+    return PopupMenuButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            enabled: false,
+            title: (status == ServerStatus.Online)
+                ? Text('Socket conectado', style: AppTextTheme.greyBody)
+                : Text('Socket desconectado', style: AppTextTheme.greyBody),
+            leading: (status == ServerStatus.Online)
+                ? Icon(Icons.check_circle, color: Colors.green[400])
+                : Icon(Icons.cancel, color: Colors.red[400]),
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text('Salir', style: AppTextTheme.greyBody),
+            leading: Icon(Icons.exit_to_app, color: Colors.grey.shade600),
+            onTap: () {
+              Provider.of<SocketService>(context, listen: false).disconnect();
+              AuthService.deleteToken();
+              Navigator.pushNamedAndRemoveUntil(
+                  context, 'login', (route) => false);
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -79,18 +109,29 @@ class _UserPageState extends State<UserPage> {
 
   ListTile _users(User user) {
     return ListTile(
-      title: Text(user.name),
-      subtitle: Text(user.email),
-      leading: CircleAvatar(
-        child: Text(user.name.substring(0, 2)),
+      title: Text(
+        user.name,
+        style: AppTextTheme.greyBody?.copyWith(fontSize: 15),
       ),
-      trailing: Container(
-        width: 11,
-        height: 11,
-        decoration: BoxDecoration(
-          color: user.online ? Colors.green[400] : Colors.red[400],
-          borderRadius: BorderRadius.circular(100),
-        ),
+      leading: Stack(
+        children: [
+          CircleAvatar(
+            radius: 25,
+            child: Text(user.name.substring(0, 2)),
+          ),
+          Positioned(
+            right: 2,
+            bottom: 2,
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: user.online ? Colors.green[400] : Colors.red[400],
+                borderRadius: BorderRadius.circular(100),
+              ),
+            ),
+          ),
+        ],
       ),
       onTap: () {
         final chatService = Provider.of<ChatService>(context, listen: false);

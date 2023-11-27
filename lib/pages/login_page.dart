@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:chat_app/helpers/helpers.dart';
 import 'package:chat_app/services/services.dart';
+import 'package:chat_app/config/theme/theme.dart';
 import 'package:chat_app/widgets/widgets.dart';
 
 class LoginPage extends StatelessWidget {
@@ -19,10 +20,19 @@ class LoginPage extends StatelessWidget {
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Logo(),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 50,
+                  child: Text(
+                    'Ingresá con tu cuenta',
+                    style: AppTextTheme.greyTitle,
+                  ),
+                ),
                 const _Form(),
+                const SizedBox(height: 50),
                 Labels(
                   account: '¿No tenés una cuenta? ',
                   action: 'Creá una :)',

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:chat_app/config/routes/routes.dart';
+import 'package:chat_app/config/theme/theme.dart';
 import 'package:chat_app/services/services.dart';
 
 void main() {
@@ -11,8 +12,8 @@ void main() {
     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarDividerColor: Colors.grey.shade200,
-      systemNavigationBarColor: Colors.grey.shade200,
+      systemNavigationBarDividerColor: Colors.grey.shade100,
+      systemNavigationBarColor: Colors.grey.shade100,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
@@ -33,12 +34,8 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Chat App',
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.grey.shade200,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
+        title: 'Chatting',
+        theme: AppTheme().getTheme(),
         initialRoute: 'loading',
         routes: appRoutes,
       ),
